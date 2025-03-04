@@ -1,0 +1,47 @@
+﻿@model IEnumerable<ProjectPRN.Models.Computer>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Computer Manager</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PcName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PcTypeNavigation.CtName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PcName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PcTypeNavigation.CtName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PcId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PcId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PcId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
