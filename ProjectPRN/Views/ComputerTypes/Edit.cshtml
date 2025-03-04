@@ -1,0 +1,78 @@
+﻿@model ProjectPRN.Models.ComputerType
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ComputerType</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CtId" />
+            <div class="form-group">
+                <label asp-for="CtName" class="control-label"></label>
+                <input asp-for="CtName" class="form-control" />
+                <span asp-validation-for="CtName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" id="price" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+     document.addEventListener("DOMContentLoaded", function () {
+         let priceInput = document.getElementById("price");
+
+         // Chuyển ',' thành '.'
+         priceInput.value = priceInput.value.replace(/,/g, '.');
+
+         // Xóa phần .00 nếu có
+         priceInput.value = parseFloat(priceInput.value).toString();
+
+         // Xử lý khi người dùng nhập vào input
+         priceInput.addEventListener("input", function () {
+             let value = this.value;
+
+             // Xóa tất cả ký tự không phải số hoặc dấu '.'
+             value = value.replace(/[^0-9.]/g, '');
+
+             // Đảm bảo chỉ có một dấu '.'
+             value = value.replace(/(\..*)\./g, '$1');
+
+             this.value = value;
+         });
+     });
+
+     document.querySelector("form").addEventListener("submit", function (event) {
+         let priceInput = document.getElementById("price");
+
+         // Kiểm tra giá trị trước khi gửi
+         console.log("Submitting Price:", priceInput.value);
+
+         if (!confirm("Do you want to update the computer type?")) {
+             event.preventDefault();
+         }
+     });
+</script>
+
+
+
