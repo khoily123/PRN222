@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectPRN.Hubs;
 using ProjectPRN.Models;
 
 namespace ProjectPRN.Controllers
@@ -12,10 +14,12 @@ namespace ProjectPRN.Controllers
     public class ComputersController : Controller
     {
         private readonly ProjectPrn222Context _context;
+        private readonly IHubContext<SignalRServices> _signalRServices;
 
-        public ComputersController(ProjectPrn222Context context)
+        public ComputersController(ProjectPrn222Context context, IHubContext<SignalRServices> _signalRServices)
         {
             _context = context;
+            this._signalRServices = _signalRServices;
         }
 
         // GET: Computers
@@ -74,6 +78,7 @@ namespace ProjectPRN.Controllers
 
                 _context.Add(computer);
                 await _context.SaveChangesAsync();
+                await _signalRServices.Clients.All.SendAsync("ReceiveComputer");
                 TempData["SuccessMessage"] = "Tạo thành công!";
                 return RedirectToAction(nameof(Index));
             }
@@ -139,6 +144,7 @@ namespace ProjectPRN.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                await _signalRServices.Clients.All.SendAsync("ReceiveComputer");
                 TempData["SuccessMessage"] = "Chỉnh sửa thành công!";
             }
             catch (DbUpdateConcurrencyException)
@@ -187,6 +193,7 @@ namespace ProjectPRN.Controllers
             }
 
             await _context.SaveChangesAsync();
+            await _signalRServices.Clients.All.SendAsync("ReceiveComputer");
             TempData["SuccessMessage"] = "Xóa thành công!";
             return RedirectToAction(nameof(Index));
         }
