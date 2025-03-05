@@ -4,11 +4,19 @@
 // Write your JavaScript code.
 "use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/productHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/serviceHub").build();
 
 connection.on("ReceiveProduct", function () {
 
     location.href = "/Products/Index";
+});
+
+connection.on("ReceiveComputer", function (){
+    location.href = "/Computers/Index";
+});
+
+connection.on("ReceiveComputerType", function () {
+    location.href = "/ComputerTypes/Index";
 });
 
 connection.start().then(() => {

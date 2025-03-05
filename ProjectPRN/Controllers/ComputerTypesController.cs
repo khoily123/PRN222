@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ProjectPRN.Hubs;
 using ProjectPRN.Models;
 
 namespace ProjectPRN.Controllers
@@ -13,10 +15,12 @@ namespace ProjectPRN.Controllers
     public class ComputerTypesController : Controller
     {
         private readonly ProjectPrn222Context _context;
+        private readonly IHubContext<SignalRServices> _signalRServices;
 
-        public ComputerTypesController(ProjectPrn222Context context)
+        public ComputerTypesController(ProjectPrn222Context context, IHubContext<SignalRServices> _signalRServices)
         {
             _context = context;
+            this._signalRServices = _signalRServices;
         }
 
         // GET: ComputerTypes
@@ -67,6 +71,7 @@ namespace ProjectPRN.Controllers
             {
                 _context.Add(computerType);
                 await _context.SaveChangesAsync();
+                await _signalRServices.Clients.All.SendAsync("ReceiveComputerType");
                 TempData["SuccessMessage"] = "Tạo thành công!";
                 return RedirectToAction(nameof(Index));
             }
@@ -112,6 +117,7 @@ namespace ProjectPRN.Controllers
                 {
                     _context.Update(computerType);
                     await _context.SaveChangesAsync();
+                    await _signalRServices.Clients.All.SendAsync("ReceiveComputerType");
                     TempData["SuccessMessage"] = "Chỉnh sửa thành công!";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -173,7 +179,7 @@ namespace ProjectPRN.Controllers
 
             _context.ComputerTypes.Remove(computerType);
             await _context.SaveChangesAsync();
-
+            await _signalRServices.Clients.All.SendAsync("ReceiveComputerType");
             TempData["SuccessMessage"] = "Xóa thành công!";
             return RedirectToAction(nameof(Index));
         }

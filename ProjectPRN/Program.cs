@@ -29,5 +29,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapHub<SignalRServices>("/productHub"); // Thêm Hub vào
+app.MapHub<SignalRServices>("/serviceHub"); // Thêm Hub vào
 app.Run();
