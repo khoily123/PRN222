@@ -66,5 +66,25 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
 
             return new JsonResult(classCode);
         }
+
+        public async Task<JsonResult> OnGetGetClassesByCourse(int courseId)
+        {
+            var classes = await _context.ClassCourses
+                .Where(cc => cc.CourseId == courseId)
+                .Select(cc => new { cc.ClassId, cc.Class.ClassCode })
+                .ToListAsync();
+
+            return new JsonResult(classes);
+        }
+
+        public async Task<JsonResult> OnGetGetLecturerByClass(int classId)
+{
+    var lecturer = await _context.ClassCourses
+        .Where(cc => cc.ClassId == classId)
+        .Select(cc => new { cc.LecturerId, cc.Lecturer.LecturerName })
+        .FirstOrDefaultAsync();
+
+    return new JsonResult(lecturer);
+}
     }
 }

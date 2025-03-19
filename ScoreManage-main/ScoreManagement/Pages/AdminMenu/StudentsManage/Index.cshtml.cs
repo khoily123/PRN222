@@ -41,6 +41,7 @@ namespace ScoreManagement.Pages.StudentsManage
                 .Include(s => s.Account)
                 .Include(s => s.Major)
                 .ToListAsync();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Students");
