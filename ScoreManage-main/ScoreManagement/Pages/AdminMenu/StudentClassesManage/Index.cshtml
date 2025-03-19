@@ -22,82 +22,98 @@
 <body>
     <header>
         <div id="wrapper">
-            <!-- Gọi Sidebar từ Partial View -->
             @await Html.PartialAsync("_Sidebar")
 
-            <!-- Content Wrapper -->
             <div id="content-wrapper" class="d-flex flex-column">
-
-                <!-- Main Content -->
                 <div id="content">
-
-                    <!-- Gọi Topbar từ Partial View -->
                     @await Html.PartialAsync("_Topbar")
 
-                    <!-- Begin Page Content -->
                     <div class="container-fluid">
+                        <h1 class="h3 mb-2 text-gray-800">Student Classes Management</h1>
 
-                        <!-- Page Heading -->
-                        <h1 class="h3 mb-2 text-gray-800">Student Classes Managenment</h1>
-                        
-
-                        <!-- Create New Account Button -->
-                        <div class="mb-3">
-                            <a asp-page="Create" class="btn btn-primary">Create</a>
-                        </div>
-
-                        <!-- DataTable Example -->
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">List StudentClasses</h6>
+                        <div class="row">
+                            <!-- Danh sách lớp học -->
+                            <div class="col-md-4">
+                                <h5 class="font-weight-bold text-primary">Class List</h5>
+                                <ul class="list-group">
+                                    @foreach (var item in Model.Classes)
+                                    {
+                                        <li class="list-group-item">
+                                            <a asp-page="./Index" asp-route-SelectedClassId="@item.ClassId">@item.ClassCode</a>
+                                        </li>
+                                    }
+                                </ul>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    Class
-                                                </th>
-                                                <th>
-                                                    Student
-                                                </th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in Model.StudentClass)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.Class.ClassCode)
-                                                    </td>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.Student.StudentCode)
-                                                    </td>
-                                                    <td>
-                                                        <a asp-page="./Edit" class="btn btn-primary" asp-route-id="@item.StudentClassId">Edit</a> |
-                                                        <a asp-page="./Details" class="btn btn-success" asp-route-id="@item.StudentClassId">Details</a> |
-                                                        <a asp-page="./Delete" class="btn btn-danger" asp-route-id="@item.StudentClassId">Delete</a>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
 
-                                    </table>
+                            <!-- Danh sách sinh viên trong lớp -->
+                            <div class="col-md-8">
+                                <!-- Form Thêm Sinh Viên -->
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Add Student to Class</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post">
+                                            <div class="form-group">
+                                                <label for="SelectedStudentId">Select Student:</label>
+                                                <select asp-for="SelectedStudentId" class="form-control">
+                                                    <option value="">-- Select Student --</option>
+                                                    @foreach (var student in Model.Students)
+                                                    {
+                                                        <option value="@student.StudentId">@student.StudentCode</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <input type="hidden" asp-for="SelectedClassId" />
+                                            <button type="submit" asp-page-handler="AddStudent" class="btn btn-success">Add Student</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                <h5 class="font-weight-bold text-primary">Students in Class</h5>
+                                @if (Model.SelectedClassId.HasValue)
+                                {
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3">
+                                            <h6 class="m-0 font-weight-bold text-primary">List of Students</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Student Code</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var studentClass in Model.StudentClass)
+                                                        {
+                                                            <tr>
+                                                                <td>@studentClass.Student.StudentCode</td>
+                                                                <td>
+                                                                    <a asp-page="./Edit" class="btn btn-primary" asp-route-id="@studentClass.StudentClassId">Edit</a> |
+                                                                    <a asp-page="./Details" class="btn btn-success" asp-route-id="@studentClass.StudentClassId">Details</a> |
+                                                                    <a asp-page="./Delete" class="btn btn-danger" asp-route-id="@studentClass.StudentClassId">Delete</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <p>Please select a class to view students.</p>
+                                }
                             </div>
                         </div>
 
                     </div>
-                    <!-- /.container-fluid -->
-                    <!-- End of Page Content -->
-
                 </div>
-                <!-- End of Main Content -->
             </div>
-            <!-- End of Content Wrapper -->
-
         </div>
     </header>
 
