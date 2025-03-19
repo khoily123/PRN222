@@ -32,7 +32,7 @@ namespace ScoreManagement.Pages.LectureMenu
             return RedirectToPage("/AccountLogin/Login");
         }
 
-        public IActionResult OnGet(int? CourseId)
+        public IActionResult OnGet(int? ClassCourseId)
         {
             // Retrieve LecturerId from claims
             var lecturerIdClaim = User.Claims.FirstOrDefault(c => c.Type == "LecturerId");
@@ -50,6 +50,7 @@ namespace ScoreManagement.Pages.LectureMenu
                 .Where(cc => cc.LecturerId == LecturerId)
                 .Select(cc => new ClassInfo
                 {
+                    ClassInfoId = cc.ClassCourseId,
                     ClassCode = cc.Class.ClassCode,
                     CourseName = cc.Course.CourseName ?? "Unknown Course",
                     CourseCode = cc.Course.CourseCode,
@@ -58,25 +59,27 @@ namespace ScoreManagement.Pages.LectureMenu
                 })
                 .ToList();
 
-            if (CourseId.HasValue)
+            if (ClassCourseId.HasValue)
             {
                 // Tìm ClassId dựa trên CourseId  và LecturerId
                 var classCourse = _context.ClassCourses
-             .FirstOrDefault(cc => cc.CourseId == CourseId.Value && cc.LecturerId == LecturerId);
+    .FirstOrDefault(cc => cc.ClassCourseId == ClassCourseId.Value && cc.LecturerId == LecturerId);
+
                 if (classCourse != null)
                 {
                     SelectedClass = _context.Classes.FirstOrDefault(c => c.ClassId == classCourse.ClassId);
-                    SelectedCourse = _context.Courses.FirstOrDefault(c => c.CourseId == CourseId.Value);
+                    SelectedCourse = _context.Courses.FirstOrDefault(c => c.CourseId == classCourse.CourseId);
 
-                    // Lấy danh sách sinh viên dựa trên ClassId
+                    // Lấy danh sách sinh viên dựa trên ClassCourseId
                     Students = _context.StudentsCourses
-                          .Where(sc => sc.LecturerId == LecturerId && sc.CourseId == CourseId && sc.ClassId == classCourse.ClassId).Select(sc => new StudentInfo
+                          .Where(sc => sc.LecturerId == LecturerId && sc.CourseId == classCourse.CourseId && sc.ClassId == classCourse.ClassId) // ✅ Đổi CourseId từ classCourse
+                          .Select(sc => new StudentInfo
                           {
                               StudentId = sc.StudentId ?? 0,
                               StudentName = sc.Student.FullName,
                               StudentCode = sc.Student.StudentCode
                           })
-                .ToList();
+                          .ToList();
                 }
             }
 
@@ -87,6 +90,7 @@ namespace ScoreManagement.Pages.LectureMenu
 
     public class ClassInfo
     {
+        public int ClassInfoId { get; set; }
         public int? ClassId { get; set; }
         public string? ClassCode { get; set; }
         public string? CourseName { get; set; }

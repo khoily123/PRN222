@@ -1,4 +1,4 @@
-﻿@page "{CourseId:int?}"
+﻿@page "{ClassCourseId:int?}"
 @model ScoreManagement.Pages.LectureMenu.LecturerDashboardModel
 
 @{
@@ -29,7 +29,7 @@
                     <div class="class-item col-md-6 col-lg-4 mb-4">
                         <div class="card shadow-sm border-0 h-100">
                             <div class="card-body">
-                                <a asp-page="/LectureMenu/LecturerDashboard" asp-route-CourseId="@classItem.CourseId">
+                                <a asp-page="/LectureMenu/LecturerDashboard" asp-route-ClassCourseId="@classItem.ClassInfoId">
                                     <h5 class="card-title font-weight-bold text-primary">
                                         @classItem.ClassCode - @classItem.CourseCode
                                     </h5>

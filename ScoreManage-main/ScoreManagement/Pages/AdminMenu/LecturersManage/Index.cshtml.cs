@@ -38,8 +38,8 @@ namespace ScoreManagement.Pages.AdminMenu.LecturersManage
 
 			var lecturers = await _context.Lecturers
 				.Include(l => l.Account).ToListAsync();
-
-			using var package = new ExcelPackage();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using var package = new ExcelPackage();
 			var worksheet = package.Workbook.Worksheets.Add("Lecturers");
 
 			// Thêm tiêu đề cho các cột

@@ -40,7 +40,17 @@ namespace ScoreManagement.Pages.AdminMenu.ClassCoursesManage
             {
                 return Page();
             }
+            bool isExist = await _context.ClassCourses
+                .AnyAsync(cc => cc.ClassId == ClassCourse.ClassId && cc.CourseId == ClassCourse.CourseId);
 
+            if (isExist)
+            {
+                ModelState.AddModelError(string.Empty, "Lớp này đã tồn tại môn này!");
+                ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
+                ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
+                ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerId");
+                return Page(); // Trả lại trang với thông báo lỗi
+            }
             _context.ClassCourses.Add(ClassCourse);
             await _context.SaveChangesAsync();
 

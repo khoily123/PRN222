@@ -14,14 +14,7 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StudentsCourse.ClassId" class="control-label"></label>
-                <select asp-for="StudentsCourse.ClassId" class="form-control" asp-items="ViewBag.ClassId" id="ClassIdDropdown"></select>
-            </div>
-            <div class="form-group">
-                <label for="ClassCode" class="control-label">Class Code</label>
-                <input type="text" class="form-control" id="ClassCode" readonly />
-            </div>
+            <!-- Chọn Sinh Viên -->
             <div class="form-group">
                 <label asp-for="StudentsCourse.StudentId" class="control-label"></label>
                 <select asp-for="StudentsCourse.StudentId" class="form-control" asp-items="ViewBag.StudentId" id="StudentIdDropdown"></select>
@@ -34,17 +27,23 @@
                 <label for="FullName" class="control-label">Full Name</label>
                 <input type="text" class="form-control" id="FullName" readonly />
             </div>
+
+            <!-- Chọn Môn Học -->
             <div class="form-group">
                 <label asp-for="StudentsCourse.CourseId" class="control-label"></label>
-                <select asp-for="StudentsCourse.CourseId" class ="form-control" asp-items="ViewBag.CourseId"></select>
+                <select asp-for="StudentsCourse.CourseId" class="form-control" asp-items="ViewBag.CourseId" id="CourseIdDropdown"></select>
             </div>
+
+            <!-- Chọn Lớp (ban đầu bị vô hiệu hóa) -->
             <div class="form-group">
-                <label asp-for="StudentsCourse.SemesterId" class="control-label"></label>
-                <select asp-for="StudentsCourse.SemesterId" class ="form-control" asp-items="ViewBag.SemesterId"></select>
+                <label asp-for="StudentsCourse.ClassId" class="control-label"></label>
+                <select asp-for="StudentsCourse.ClassId" class="form-control" id="ClassIdDropdown" disabled></select>
             </div>
+
+            <!-- Chọn Giảng Viên (ban đầu bị vô hiệu hóa) -->
             <div class="form-group">
                 <label asp-for="StudentsCourse.LecturerId" class="control-label"></label>
-                <select asp-for="StudentsCourse.LecturerId" class ="form-control" asp-items="ViewBag.LecturerId"></select>
+                <select asp-for="StudentsCourse.LecturerId" class="form-control" id="LecturerIdDropdown" disabled></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -81,17 +80,53 @@
         });
     </script>
     <script>
-        document.getElementById("ClassIdDropdown").addEventListener("change", function () {
-            const classId = this.value;
-            if (classId) {
-                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=ClassCode&classId=${classId}`)
+        // Khi chọn môn học, lấy danh sách lớp tương ứng
+        document.getElementById("CourseIdDropdown").addEventListener("change", function () {
+            const courseId = this.value;
+            const classDropdown = document.getElementById("ClassIdDropdown");
+
+            if (courseId) {
+                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetClassesByCourse&courseId=${courseId}`)
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById("ClassCode").value = data || '';
+                        classDropdown.innerHTML = ""; // Xóa danh sách cũ
+                        classDropdown.disabled = false; // Mở khóa dropdown lớp
+
+                        data.forEach(classItem => {
+                            let option = document.createElement("option");
+                            option.value = classItem.classId;
+                            option.text = classItem.classCode;
+                            classDropdown.appendChild(option);
+                        });
                     })
-                    .catch(error => console.error('Lỗi khi lấy mã lớp:', error));
+                    .catch(error => console.error('Lỗi khi lấy danh sách lớp:', error));
             } else {
-                document.getElementById("ClassCode").value = '';
+                classDropdown.innerHTML = "";
+                classDropdown.disabled = true;
+            }
+        });
+
+        // Khi chọn lớp, lấy giảng viên tương ứng
+        document.getElementById("ClassIdDropdown").addEventListener("change", function () {
+            const classId = this.value;
+            const lecturerDropdown = document.getElementById("LecturerIdDropdown");
+
+            if (classId) {
+                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetLecturerByClass&classId=${classId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        lecturerDropdown.innerHTML = ""; // Xóa danh sách cũ
+                        lecturerDropdown.disabled = false; // Mở khóa dropdown giảng viên
+
+                        let option = document.createElement("option");
+                        option.value = data.lecturerId;
+                        option.text = data.lecturerName;
+                        lecturerDropdown.appendChild(option);
+                    })
+                    .catch(error => console.error('Lỗi khi lấy giảng viên:', error));
+            } else {
+                lecturerDropdown.innerHTML = "";
+                lecturerDropdown.disabled = true;
             }
         });
     </script>
