@@ -46,26 +46,21 @@ namespace ScoreManagement.Pages.AdminMenu.GradeManage
                 .Include(g => g.StudentCourse.Class)
                 .ToListAsync();
 
-            using var package = new ExcelPackage();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Grades");
 
-            // Thêm tiêu đề cột
-            worksheet.Cells[1, 1].Value = "StudentCode";
-            worksheet.Cells[1, 2].Value = "FullName";
-            worksheet.Cells[1, 3].Value = "CourseCode";
-            worksheet.Cells[1, 4].Value = "SemesterCode";
-            worksheet.Cells[1, 5].Value = "ClassCode";
-            worksheet.Cells[1, 6].Value = "Assignment1";
-            worksheet.Cells[1, 7].Value = "Assignment2";
-            worksheet.Cells[1, 8].Value = "Assignment3";
-            worksheet.Cells[1, 9].Value = "ProgressTest1";
-            worksheet.Cells[1, 10].Value = "ProgressTest2";
-            worksheet.Cells[1, 11].Value = "ProgressTest3";
-            worksheet.Cells[1, 12].Value = "FinalExam";
-            worksheet.Cells[1, 13].Value = "AverageScore";
-            worksheet.Cells[1, 14].Value = "Status";
+            string[] headers = { "StudentCode", "FullName", "CourseCode", "SemesterCode", "ClassCode",
+                         "Assignment1", "Assignment2", "Assignment3",
+                         "ProgressTest1", "ProgressTest2", "ProgressTest3",
+                         "FinalExam", "AverageScore", "Status" };
 
-            // Thêm dữ liệu vào các hàng
+            for (int col = 0; col < headers.Length; col++)
+            {
+                worksheet.Cells[1, col + 1].Value = headers[col];
+            }
+
             for (int i = 0; i < grades.Count; i++)
             {
                 var grade = grades[i];
@@ -85,14 +80,11 @@ namespace ScoreManagement.Pages.AdminMenu.GradeManage
                 worksheet.Cells[i + 2, 14].Value = grade.Status;
             }
 
-            // Xuất file Excel
             var stream = new MemoryStream();
             package.SaveAs(stream);
-            stream.Position = 0;
+            stream.Position = 0; // Đặt lại vị trí đầu stream để ASP.NET Core có thể đọc
 
-            var fileName = "Grades.xlsx";
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grades.xlsx");
         }
-
     }
 }
