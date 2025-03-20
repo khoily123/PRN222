@@ -23,11 +23,11 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
 
         public IActionResult OnGet()
         {
-        ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
-        ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
-        ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerName");
-        ViewData["SemesterId"] = new SelectList(_context.Semesters, "SemesterId", "SemesterCode");
-        ViewData["StudentId"] = new SelectList(_context.Students, "StudentId", "StudentId");
+            ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
+            ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
+            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerName");
+            ViewData["SemesterId"] = new SelectList(_context.Semesters, "SemesterId", "SemesterCode");
+            ViewData["StudentId"] = new SelectList(_context.Students, "StudentId", "StudentCode");
             return Page();
         }
 
@@ -67,6 +67,16 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
             return new JsonResult(classCode);
         }
 
+        public async Task<JsonResult> OnGetGetSemesterByClass(int classId)
+        {
+            var semester = await _context.Classes
+                .Where(c => c.ClassId == classId)
+                .Select(c => new { c.SemesterId, c.Semester.SemesterCode })
+                .FirstOrDefaultAsync();
+
+            return new JsonResult(semester);
+        }
+
         public async Task<JsonResult> OnGetGetClassesByCourse(int courseId)
         {
             var classes = await _context.ClassCourses
@@ -77,14 +87,14 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
             return new JsonResult(classes);
         }
 
-        public async Task<JsonResult> OnGetGetLecturerByClass(int classId)
-{
-    var lecturer = await _context.ClassCourses
-        .Where(cc => cc.ClassId == classId)
-        .Select(cc => new { cc.LecturerId, cc.Lecturer.LecturerName })
-        .FirstOrDefaultAsync();
+        public async Task<JsonResult> OnGetGetLecturerByClassAndCourse(int classId, int courseId)
+        {
+            var lecturer = await _context.ClassCourses
+                .Where(cc => cc.ClassId == classId && cc.CourseId == courseId)
+                .Select(cc => new { cc.LecturerId, cc.Lecturer.LecturerName })
+                .FirstOrDefaultAsync();
 
-    return new JsonResult(lecturer);
-}
+            return new JsonResult(lecturer);
+        }
     }
 }
