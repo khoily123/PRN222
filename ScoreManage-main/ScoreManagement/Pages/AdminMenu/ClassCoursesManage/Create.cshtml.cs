@@ -23,39 +23,49 @@ namespace ScoreManagement.Pages.AdminMenu.ClassCoursesManage
 
         public IActionResult OnGet()
         {
-            ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
+            ViewData["ClassCode"] = new SelectList(_context.Classes, "ClassId", "ClassCode");
+            ViewData["LecturerName"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerName");
             ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
-            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerId");
             return Page();
         }
 
         [BindProperty]
         public ClassCourse ClassCourse { get; set; } = default!;
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.ClassCourses == null || ClassCourse == null)
+            if (!ModelState.IsValid || _context.ClassCourses == null || ClassCourse == null)
             {
+                SetViewData(); // Gọi hàm thiết lập lại ViewData
                 return Page();
             }
+
             bool isExist = await _context.ClassCourses
                 .AnyAsync(cc => cc.ClassId == ClassCourse.ClassId && cc.CourseId == ClassCourse.CourseId);
 
             if (isExist)
             {
                 ModelState.AddModelError(string.Empty, "Lớp này đã tồn tại môn này!");
-                ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
-                ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
-                ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerId");
-                return Page(); // Trả lại trang với thông báo lỗi
+                SetViewData(); // Thiết lập lại ViewData để dropdown không bị mất
+                return Page();
             }
+
             _context.ClassCourses.Add(ClassCourse);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
+
+        // Hàm thiết lập lại danh sách dropdown
+        private void SetViewData()
+        {
+            ViewData["ClassCode"] = new SelectList(_context.Classes, "ClassId", "ClassCode");
+            ViewData["LecturerName"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerName");
+            ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
+        }
+
         public async Task<JsonResult> OnGetClassCode(int classId)
         {
             var classCode = await _context.Classes
