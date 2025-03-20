@@ -94,6 +94,8 @@ namespace ScoreManagement.Pages.StudentMenu
 
         public IActionResult OnGetExportToExcel(int studentId)
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
             var studentIdForExport = StudentId;
             // Lấy thông tin sinh viên
             var student = _context.Students.SingleOrDefault(s => s.StudentId == studentId);
@@ -129,19 +131,18 @@ namespace ScoreManagement.Pages.StudentMenu
             using (var package = new ExcelPackage())
             {
                 var worksheet = package.Workbook.Worksheets.Add("Grade Report");
-                worksheet.Cells[1, 1].Value = "Semester";
-                worksheet.Cells[1, 2].Value = "Course Name";
-                worksheet.Cells[1, 3].Value = "Course Code";
-                worksheet.Cells[1, 4].Value = "Assignment 1";
-                worksheet.Cells[1, 5].Value = "Assignment 2";
-                worksheet.Cells[1, 6].Value = "Assignment 3";
-                worksheet.Cells[1, 7].Value = "Progress Test 1";
-                worksheet.Cells[1, 8].Value = "Progress Test 2";
-                worksheet.Cells[1, 9].Value = "Progress Test 3";
-                worksheet.Cells[1, 10].Value = "Final Exam";
-                worksheet.Cells[1, 11].Value = "Average Score";
-                worksheet.Cells[1, 12].Value = "Status";
 
+                // Tiêu đề cột
+                string[] headers = { "Semester", "Course Name", "Course Code", "Assignment 1", "Assignment 2",
+                             "Assignment 3", "Progress Test 1", "Progress Test 2", "Progress Test 3",
+                             "Final Exam", "Average Score", "Status" };
+
+                for (int col = 0; col < headers.Length; col++)
+                {
+                    worksheet.Cells[1, col + 1].Value = headers[col];
+                }
+
+                // Đổ dữ liệu vào bảng
                 for (int i = 0; i < studentReports.Count; i++)
                 {
                     var report = studentReports[i];
@@ -163,11 +164,14 @@ namespace ScoreManagement.Pages.StudentMenu
                 worksheet.Cells.AutoFitColumns();
 
                 // Trả về file Excel
-                var stream = new MemoryStream();
-                package.SaveAs(stream);
-                var content = stream.ToArray();
-                var fileName = $"GradeReport_{student.FullName}_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
-                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                using (var stream = new MemoryStream())
+                {
+                    package.SaveAs(stream);
+                    stream.Position = 0;
+
+                    string fileName = $"GradeReport_{student.FullName}_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                }
             }
         }
     }
