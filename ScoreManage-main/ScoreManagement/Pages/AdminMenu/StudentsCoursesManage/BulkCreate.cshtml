@@ -1,0 +1,130 @@
+﻿@page
+@model ScoreManagement.Pages.AdminMenu.StudentsCoursesManage.BulkCreateModel
+@{
+    ViewData["Title"] = "Bulk Create StudentCourses";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Bulk Create StudentCourses</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Chọn Lớp -->
+            <div class="form-group">
+                <label for="ClassCodeDropdown" class="control-label">Select Class</label>
+                <select class="form-control" id="ClassCodeDropdown" asp-items="ViewBag.Classes"></select>
+            </div>
+
+            <!-- Trường ẩn để lưu `ClassId` -->
+            <input type="hidden" id="ClassIdHidden" name="ClassId" />
+
+            <!-- Chọn Môn Học -->
+            <div class="form-group">
+                <label for="CourseCodeDropdown" class="control-label">Select Course</label>
+                <select class="form-control" id="CourseCodeDropdown" asp-items="ViewBag.Courses"></select>
+            </div>
+
+            <!-- Trường ẩn để lưu `CourseId` -->
+            <input type="hidden" id="CourseIdHidden" name="CourseId" />
+
+            <hr />
+            <h4>Students in Class</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Student Code</th>
+                        <th>Full Name</th>
+                        <th>Include</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <!-- Danh sách sinh viên sẽ được điền vào đây -->
+                </tbody>
+            </table>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create StudentCourses</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+                  document.addEventListener("DOMContentLoaded", function () {
+
+            // 🔹 Khi chọn ClassCode, lưu ClassId vào input ẩn
+            document.getElementById("ClassCodeDropdown").addEventListener("change", function () {
+                const selectedClassId = this.value;
+                document.getElementById("ClassIdHidden").value = selectedClassId;
+                console.log("Selected ClassId:", selectedClassId);
+
+                if (selectedClassId) {
+                    // 🔹 Lấy danh sách sinh viên trong lớp
+                    fetch(`/AdminMenu/StudentsCoursesManage/BulkCreate?handler=GetStudentsByClass&classId=${selectedClassId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const studentsTableBody = document.getElementById("studentsTableBody");
+                            studentsTableBody.innerHTML = "";
+
+                            data.forEach(student => {
+                                let row = `<tr>
+                                    <td>${student.studentCode}</td>
+                                    <td>${student.fullName}</td>
+                                    <td><input type="checkbox" name="selectedStudents" value="${student.studentId}" checked></td>
+                                </tr>`;
+                                studentsTableBody.innerHTML += row;
+                            });
+                        })
+                        .catch(error => console.error('Error fetching students:', error));
+
+                    // 🔹 Lấy giảng viên của lớp
+                    fetch(`/AdminMenu/StudentsCoursesManage/BulkCreate?handler=GetLecturerByClass&classId=${selectedClassId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const lecturerDropdown = document.getElementById("LecturerIdDropdown");
+                            lecturerDropdown.innerHTML = "";
+                            let option = document.createElement("option");
+                            option.value = data.lecturerId;
+                            option.text = data.lecturerName;
+                            lecturerDropdown.appendChild(option);
+                            lecturerDropdown.disabled = false;
+                        })
+                        .catch(error => console.error('Error fetching lecturer:', error));
+
+                    // 🔹 Lấy kỳ học của lớp
+                    fetch(`/AdminMenu/StudentsCoursesManage/BulkCreate?handler=GetSemesterByClass&classId=${selectedClassId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const semesterDropdown = document.getElementById("SemesterIdDropdown");
+                            semesterDropdown.innerHTML = "";
+                            let option = document.createElement("option");
+                            option.value = data.semesterId;
+                            option.text = data.semesterCode;
+                            semesterDropdown.appendChild(option);
+                            semesterDropdown.disabled = false;
+                        })
+                        .catch(error => console.error('Error fetching semester:', error));
+                } else {
+                    // Reset nếu không chọn lớp
+                    document.getElementById("studentsTableBody").innerHTML = "";
+                    document.getElementById("LecturerIdDropdown").innerHTML = "";
+                    document.getElementById("SemesterIdDropdown").innerHTML = "";
+                }
+            });
+
+            // 🔹 Khi chọn CourseCode, lưu CourseId vào input ẩn
+            document.getElementById("CourseCodeDropdown").addEventListener("change", function () {
+                const selectedCourseId = this.value;
+                document.getElementById("CourseIdHidden").value = selectedCourseId;
+                console.log("Selected CourseId:", selectedCourseId);
+            });
+
+        });
+
+    </script>
+}

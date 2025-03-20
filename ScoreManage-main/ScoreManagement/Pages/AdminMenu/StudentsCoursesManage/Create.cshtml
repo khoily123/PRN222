@@ -16,13 +16,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <!-- Chọn Sinh Viên -->
             <div class="form-group">
-                <label asp-for="StudentsCourse.StudentId" class="control-label"></label>
-                <select asp-for="StudentsCourse.StudentId" class="form-control" asp-items="ViewBag.StudentId" id="StudentIdDropdown"></select>
+                <label for="StudentCodeDropdown" class="control-label">Student Code</label>
+                <select class="form-control" id="StudentCodeDropdown" asp-items="ViewBag.StudentId"></select>
             </div>
-            <div class="form-group">
-                <label for="StudentCode" class="control-label">Student Code</label>
-                <input type="text" class="form-control" id="StudentCode" readonly />
-            </div>
+
+            <!-- Trường ẩn để giữ StudentId -->
+            <input type="hidden" id="StudentIdHidden" asp-for="StudentsCourse.StudentId" />
+
             <div class="form-group">
                 <label for="FullName" class="control-label">Full Name</label>
                 <input type="text" class="form-control" id="FullName" readonly />
@@ -38,6 +38,12 @@
             <div class="form-group">
                 <label asp-for="StudentsCourse.ClassId" class="control-label"></label>
                 <select asp-for="StudentsCourse.ClassId" class="form-control" id="ClassIdDropdown" disabled></select>
+            </div>
+
+            <!-- Chọn Semester (ban đầu bị vô hiệu hóa) -->
+            <div class="form-group">
+                <label asp-for="StudentsCourse.SemesterId" class="control-label"></label>
+                <select asp-for="StudentsCourse.SemesterId" class="form-control" id="SemesterIdDropdown" disabled></select>
             </div>
 
             <!-- Chọn Giảng Viên (ban đầu bị vô hiệu hóa) -->
@@ -58,26 +64,25 @@
 
 @section Scripts {
     <script>
-        document.getElementById("StudentIdDropdown").addEventListener("change", function () {
-            const studentId = this.value;
-            console.log("Student ID selected:", studentId); // Kiểm tra giá trị ID đã chọn
+                document.getElementById("StudentCodeDropdown").addEventListener("change", function () {
+            const studentId = this.value; // Lấy giá trị ID của sinh viên (đang ẩn trong dropdown)
+            console.log("Student ID selected:", studentId);
+
             if (studentId) {
                 fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=StudentInfo&studentId=${studentId}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("Data received:", data); // Kiểm tra dữ liệu trả về
-                        const studentCodeField = document.getElementById("StudentCode");
-                        const fullNameField = document.getElementById("FullName");
-                        // Gán giá trị
-                        studentCodeField.value = data.studentCode || '';
-                        fullNameField.value = data.fullName || '';
+                        console.log("Data received:", data);
+                        document.getElementById("StudentIdHidden").value = studentId; // Lưu ID vào input ẩn
+                        document.getElementById("FullName").value = data.fullName || '';
                     })
                     .catch(error => console.error('Lỗi khi lấy thông tin sinh viên:', error));
             } else {
-                document.getElementById("StudentCode").value = '';
+                document.getElementById("StudentIdHidden").value = '';
                 document.getElementById("FullName").value = '';
             }
         });
+
     </script>
     <script>
         // Khi chọn môn học, lấy danh sách lớp tương ứng
@@ -107,16 +112,17 @@
         });
 
         // Khi chọn lớp, lấy giảng viên tương ứng
-        document.getElementById("ClassIdDropdown").addEventListener("change", function () {
+                document.getElementById("ClassIdDropdown").addEventListener("change", function () {
             const classId = this.value;
+            const courseId = document.getElementById("CourseIdDropdown").value;
             const lecturerDropdown = document.getElementById("LecturerIdDropdown");
 
-            if (classId) {
-                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetLecturerByClass&classId=${classId}`)
+            if (classId && courseId) {
+                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetLecturerByClassAndCourse&classId=${classId}&courseId=${courseId}`)
                     .then(response => response.json())
                     .then(data => {
-                        lecturerDropdown.innerHTML = ""; // Xóa danh sách cũ
-                        lecturerDropdown.disabled = false; // Mở khóa dropdown giảng viên
+                        lecturerDropdown.innerHTML = "";
+                        lecturerDropdown.disabled = false;
 
                         let option = document.createElement("option");
                         option.value = data.lecturerId;
@@ -129,6 +135,30 @@
                 lecturerDropdown.disabled = true;
             }
         });
+
+            document.getElementById("ClassIdDropdown").addEventListener("change", function () {
+            const classId = this.value;
+            const semesterDropdown = document.getElementById("SemesterIdDropdown");
+
+            if (classId) {
+                fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetSemesterByClass&classId=${classId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        semesterDropdown.innerHTML = "";
+                        semesterDropdown.disabled = false;
+
+                        let option = document.createElement("option");
+                        option.value = data.semesterId;
+                        option.text = data.semesterCode;
+                        semesterDropdown.appendChild(option);
+                    })
+                    .catch(error => console.error('Lỗi khi lấy semester:', error));
+            } else {
+                semesterDropdown.innerHTML = "";
+                semesterDropdown.disabled = true;
+            }
+        });
+
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
