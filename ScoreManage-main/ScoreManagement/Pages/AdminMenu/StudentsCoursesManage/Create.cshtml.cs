@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ScoreManagement.Hubs;
 using ScoreManagement.Models;
 
 namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
@@ -16,9 +18,12 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
     {
         private readonly ScoreManagement.Models.Project_PRN222Context _context;
 
-        public CreateModel(ScoreManagement.Models.Project_PRN222Context context)
+        private readonly IHubContext<ServiceHub> _signalRServices;
+
+        public CreateModel(ScoreManagement.Models.Project_PRN222Context context, IHubContext<ServiceHub> signalRServices)
         {
             _context = context;
+            _signalRServices = signalRServices;
         }
 
         public IActionResult OnGet()
@@ -45,7 +50,7 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
 
             _context.StudentsCourses.Add(StudentsCourse);
             await _context.SaveChangesAsync();
-
+            await _signalRServices.Clients.All.SendAsync("ReceiveStudentCourse");
             return RedirectToPage("./Index");
         }
         public async Task<JsonResult> OnGetStudentInfo(int studentId)

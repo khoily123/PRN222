@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ScoreManagement.Hubs;
 using ScoreManagement.Models;
 
 namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
@@ -13,9 +15,12 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
     {
         private readonly ScoreManagement.Models.Project_PRN222Context _context;
 
-        public BulkCreateModel(ScoreManagement.Models.Project_PRN222Context context)
+        private readonly IHubContext<ServiceHub> _signalRServices;
+
+        public BulkCreateModel(ScoreManagement.Models.Project_PRN222Context context, IHubContext<ServiceHub> signalRServices)
         {
             _context = context;
+            _signalRServices = signalRServices;
         }
 
         public IActionResult OnGet()
@@ -67,12 +72,12 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
                 ModelState.AddModelError("", "Selected class does not exist.");
                 return Page();
             }
-            // 🔹 Lấy danh sách StudentId đã có trong StudentCourse
+            //  Lấy danh sách StudentId đã có trong StudentCourse
             var existingStudentCourses = await _context.StudentsCourses
                 .Where(sc => sc.ClassId == ClassId && sc.CourseId == CourseId)
                 .Select(sc => sc.StudentId)
                 .ToListAsync();
-            // 🔹 Lọc sinh viên chưa có trong StudentCourse và thêm SemesterId
+            //  Lọc sinh viên chưa có trong StudentCourse và thêm SemesterId
             var newStudentCourses = SelectedStudents
                 .Where(studentId => !existingStudentCourses.Contains(studentId)) // Chỉ thêm sinh viên chưa có trong bảng
                 .Select(studentId => new StudentsCourse
@@ -91,6 +96,7 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
             {
                 _context.StudentsCourses.AddRange(newStudentCourses);
                 await _context.SaveChangesAsync();
+                await _signalRServices.Clients.All.SendAsync("ReceiveStudentCourse");
             }
 
             return RedirectToPage("./Index");
