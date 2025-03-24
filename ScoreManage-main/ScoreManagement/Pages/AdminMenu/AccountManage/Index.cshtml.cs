@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using ScoreManagement.Hubs;
 using ScoreManagement.Models;
 
 namespace ScoreManagement.Pages.AdminMenu.AccountManage
@@ -15,9 +17,12 @@ namespace ScoreManagement.Pages.AdminMenu.AccountManage
     {
         private readonly ScoreManagement.Models.Project_PRN222Context _context;
 
-        public IndexModel(ScoreManagement.Models.Project_PRN222Context context)
+        private readonly IHubContext<ServiceHub> _signalRServices;
+
+        public IndexModel(ScoreManagement.Models.Project_PRN222Context context, IHubContext<ServiceHub> signalRServices)
         {
             _context = context;
+            _signalRServices = signalRServices;
         }
 
         public IList<Account> Account { get; set; } = default!;
@@ -26,7 +31,10 @@ namespace ScoreManagement.Pages.AdminMenu.AccountManage
         {
             if (_context.Accounts != null)
             {
-                Account = await _context.Accounts.ToListAsync();
+                Account = await _context.Accounts
+                    .AsNoTracking()
+                    .OrderByDescending(m => m.AccountId)
+                    .ToListAsync();
             }
         }
     }

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using ScoreManagement.Hubs;
 using ScoreManagement.Models;
 
 namespace ScoreManagement.Pages.AdminMenu.LecturersManage
@@ -16,9 +18,12 @@ namespace ScoreManagement.Pages.AdminMenu.LecturersManage
     {
         private readonly ScoreManagement.Models.Project_PRN222Context _context;
 
-        public DeleteModel(ScoreManagement.Models.Project_PRN222Context context)
+        private readonly IHubContext<ServiceHub> _signalRServices;
+
+        public DeleteModel(ScoreManagement.Models.Project_PRN222Context context, IHubContext<ServiceHub> signalRServices)
         {
             _context = context;
+            _signalRServices = signalRServices;
         }
 
         [BindProperty]
@@ -63,6 +68,7 @@ namespace ScoreManagement.Pages.AdminMenu.LecturersManage
                 {
                     _context.Lecturers.Remove(Lecturer);
                     await _context.SaveChangesAsync();
+                    await _signalRServices.Clients.All.SendAsync("ReceiveLecturer");
                 }
                 catch (DbUpdateException)
                 {
