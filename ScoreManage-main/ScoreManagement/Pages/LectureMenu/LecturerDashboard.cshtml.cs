@@ -72,7 +72,7 @@ namespace ScoreManagement.Pages.LectureMenu
 
                     // Lấy danh sách sinh viên dựa trên ClassCourseId
                     Students = _context.StudentsCourses
-                          .Where(sc => sc.LecturerId == LecturerId && sc.CourseId == classCourse.CourseId && sc.ClassId == classCourse.ClassId) // ✅ Đổi CourseId từ classCourse
+                          .Where(sc => sc.LecturerId == LecturerId && sc.CourseId == classCourse.CourseId && sc.ClassId == classCourse.ClassId) //  Đổi CourseId từ classCourse
                           .Select(sc => new StudentInfo
                           {
                               StudentId = sc.StudentId ?? 0,
