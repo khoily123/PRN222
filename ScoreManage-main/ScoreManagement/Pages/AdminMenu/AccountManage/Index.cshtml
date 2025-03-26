@@ -70,7 +70,7 @@
                                                     <td>@Html.DisplayFor(modelItem => item.AccountId)</td>
                                                     <td>@Html.DisplayFor(modelItem => item.Username)</td>
                                                     <td id="password-@item.AccountId" data-password="@item.PasswordHash">
-                                                        @("*".PadLeft(item.PasswordHash.Length, '*'))
+                                                        @("*".PadLeft(Math.Min(item.PasswordHash.Length, 16), '*'))
                                                     </td>
                                                     <td>@Html.DisplayFor(modelItem => item.Role)</td>
                                                     <td>
@@ -114,11 +114,11 @@
             // Kiểm tra trạng thái hiện tại của ô mật khẩu
             if (passwordCell.textContent.includes("*")) {
                 // Hiển thị mật khẩu
-                passwordCell.textContent = originalPassword;
+                passwordCell.textContent = originalPassword.substring(0,16);
                 button.textContent = "Hide";
             } else {
                 // Ẩn mật khẩu
-                passwordCell.textContent = "*".repeat(originalPassword.length);
+                passwordCell.textContent = "*".repeat(Math.min(originalPassword.length, 16));
                 button.textContent = "Display";
             }
         }
