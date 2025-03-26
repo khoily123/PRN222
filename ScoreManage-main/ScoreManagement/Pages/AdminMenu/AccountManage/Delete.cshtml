@@ -24,7 +24,7 @@
         </dt>
         <dd class="col-sm-10">
             <span id="passwordDisplay" data-password="@Model.Account.PasswordHash">
-                @("*".PadLeft(Model.Account.PasswordHash.Length, '*'))
+                @("*".PadLeft(Math.Min(Model.Account.PasswordHash.Length, 16), '*'))
             </span>
             <button type="button" onclick="togglePasswordVisibility()" style="border: none; background: none;">
                 <i id="togglePasswordIcon" class="fas fa-eye"></i>
@@ -56,15 +56,16 @@
         function togglePasswordVisibility() {
             const passwordDisplay = document.getElementById("passwordDisplay");
             const toggleIcon = document.getElementById("togglePasswordIcon");
+            const originalPassword = passwordDisplay.getAttribute("data-password"); // Lấy mật khẩu gốc từ data-password
 
             if (passwordDisplay.textContent.includes("*")) {
                 // Hiển thị mật khẩu thực từ thuộc tính data-password
-                passwordDisplay.textContent = passwordDisplay.getAttribute("data-password");
+                passwordDisplay.textContent = originalPassword.substring(0, 16);
                 toggleIcon.classList.remove("fa-eye");
                 toggleIcon.classList.add("fa-eye-slash");
             } else {
                 // Ẩn mật khẩu bằng cách thay thế bằng ***
-                passwordDisplay.textContent = "*".repeat(passwordDisplay.getAttribute("data-password").length);
+                passwordDisplay.textContent = "*".repeat(Math.min(originalPassword.length, 16));
                 toggleIcon.classList.remove("fa-eye-slash");
                 toggleIcon.classList.add("fa-eye");
             }
