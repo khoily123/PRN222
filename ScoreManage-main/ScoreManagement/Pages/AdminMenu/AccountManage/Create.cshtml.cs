@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScoreManagement.Hubs;
 using ScoreManagement.Models;
+using ScoreManagement.Services;
 
 namespace ScoreManagement.Pages.AdminMenu.AccountManage
 {
@@ -67,6 +68,10 @@ namespace ScoreManagement.Pages.AdminMenu.AccountManage
                 return Page();
             }
 
+            //Mã hoá mật khẩu
+            Account.PasswordHash = RSAEncryption.Encrypt(Account.PasswordHash);
+            // **DEBUG: Kiểm tra mật khẩu sau khi mã hóa**
+            Console.WriteLine($"[DEBUG] Password sau khi mã hóa: {Account.PasswordHash}");
             // Thêm Account mới vào database
             _context.Accounts.Add(Account);
             await _context.SaveChangesAsync();

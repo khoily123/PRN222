@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using ScoreManagement.Models;
 using System.Security.Claims;
 using System.Linq;
+using ScoreManagement.Services;
 
 namespace ScoreManagement.Pages.AccountLogin
 {
@@ -89,7 +90,26 @@ namespace ScoreManagement.Pages.AccountLogin
 
         private bool VerifyPassword(string enteredPassword, string storedPasswordHash)
         {
-            return enteredPassword == storedPasswordHash;
+            //return enteredPassword == storedPasswordHash;
+            // Kiểm tra nếu mật khẩu chưa được mã hóa
+            if (enteredPassword == storedPasswordHash)
+            {
+                return true; // Mật khẩu chưa mã hóa trùng khớp
+            }
+
+            try
+            {
+                // Giải mã mật khẩu đã mã hóa
+                string decryptedPassword = RSAEncryption.Decrypt(storedPasswordHash);
+                Console.WriteLine($"[DEBUG] Password sau khi mã hóa: {decryptedPassword}");
+
+                // So sánh với mật khẩu nhập vào
+                return enteredPassword == decryptedPassword;
+            }
+            catch
+            {
+                return false; // Nếu giải mã thất bại, mật khẩu không hợp lệ
+            }
         }
 
         
