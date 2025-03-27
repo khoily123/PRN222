@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScoreManagement.Hubs;
 using ScoreManagement.Models;
+using ScoreManagement.Services;
 
 namespace ScoreManagement.Pages.AdminMenu.AccountManage
 {
@@ -79,7 +80,10 @@ namespace ScoreManagement.Pages.AdminMenu.AccountManage
                 return NotFound();
             }
             accountToUpdate.Username = Account.Username;
-            accountToUpdate.PasswordHash = Account.PasswordHash;
+            accountToUpdate.PasswordHash = RSAEncryption.Encrypt(Account.PasswordHash);
+
+            // DEBUG: Kiểm tra mật khẩu trước khi lưu
+            Console.WriteLine($"[DEBUG] Password sau khi mã hóa: {accountToUpdate.PasswordHash}");
             accountToUpdate.Role = Account.Role;
             try
             {
