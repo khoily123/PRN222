@@ -110,5 +110,19 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
 
             return RedirectToPage("./Index");
         }
+
+        public async Task<JsonResult> OnGetGetCoursesByClass(int classId)
+        {
+            var courses = await _context.ClassCourses
+                .Where(cc => cc.ClassId == classId)
+                .Include(cc => cc.Course)
+                .Select(cc => new
+                {
+                    cc.Course.CourseId,
+                    cc.Course.CourseName
+                }).ToListAsync();
+
+            return new JsonResult(courses);
+        }
     }
 }
