@@ -16,7 +16,9 @@
             <!-- Chọn Lớp -->
             <div class="form-group">
                 <label for="ClassCodeDropdown" class="control-label">Select Class</label>
-                <select class="form-control" id="ClassCodeDropdown" asp-items="ViewBag.Classes"></select>
+                <select class="form-control" id="ClassCodeDropdown" asp-items="ViewBag.Classes">
+                    <option value="">-- Select a class --</option>
+                </select>
             </div>
 
             <!-- Trường ẩn để lưu `ClassId` -->
@@ -25,7 +27,9 @@
             <!-- Chọn Môn Học -->
             <div class="form-group">
                 <label for="CourseCodeDropdown" class="control-label">Select Course</label>
-                <select class="form-control" id="CourseCodeDropdown" asp-items="ViewBag.Courses"></select>
+                <select class="form-control" id="CourseCodeDropdown" asp-items="ViewBag.Courses">
+                    <option value="">-- Select a course --</option>
+                </select>
             </div>
 
             <!-- Trường ẩn để lưu `CourseId` -->

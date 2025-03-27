@@ -57,6 +57,9 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ViewData["Classes"] = new SelectList(_context.Classes, "ClassId", "ClassCode");
+            ViewData["Courses"] = new SelectList(_context.Courses, "CourseId", "CourseName");
+
             if (SelectedStudents == null || SelectedStudents.Count == 0)
             {
                 ModelState.AddModelError("", "No students selected.");
@@ -70,6 +73,12 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
             if (classInfo == null)
             {
                 ModelState.AddModelError("", "Selected class does not exist.");
+                return Page();
+            }
+
+            if (CourseId == 0)
+            {
+                ModelState.AddModelError("", "Please select a course.");
                 return Page();
             }
             //  Lấy danh sách StudentId đã có trong StudentCourse
