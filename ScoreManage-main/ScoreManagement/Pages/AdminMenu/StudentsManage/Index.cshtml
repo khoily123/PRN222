@@ -47,7 +47,7 @@
                             <a asp-page="Create" class="btn btn-primary">Create New Student</a>
                         </div>
                             <div class="mb-3" style="margin-left: 10px">
-                                <a asp-page-handler="ExportToExcel" class="btn btn-success">Xuất Excel</a>
+                                <a asp-page-handler="ExportToExcel" class="btn btn-success">Export Excel</a>
                             </div>
 						</div>
                         <!-- DataTable Example -->
@@ -89,7 +89,7 @@
                                                         @item.Dob?.ToString("dd/MM/yyyy")
                                                     </td>
                                                     <td>
-                                                        @(item.Gender == true ? "Nam" : item.Gender == false ? "Nữ" : "Không xác định")
+                                                        @(item.Gender == true ? "Male" : item.Gender == false ? "Female" : "Không xác định")
                                                     </td>
                                                     <td>
                                                         @Html.DisplayFor(modelItem => item.Address)

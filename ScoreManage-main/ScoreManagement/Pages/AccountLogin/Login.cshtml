@@ -49,19 +49,19 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Xin Chào!</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">HELLO!</h1>
                                     </div>
                                     <form method="post" class="login-form">
                                         <div asp-validation-summary="All" class="text-danger"></div>
 
                                         <div class="form-group">
-                                            <label asp-for="Input.Username">Tên đăng nhập</label>
+                                            <label asp-for="Input.Username">UserName</label>
                                             <input asp-for="Input.Username" class="form-control" autofocus />
                                             <span asp-validation-for="Input.Username" class="text-danger"></span>
                                         </div>
 
                                         <div class="form-group">
-                                            <label asp-for="Input.Password">Mật khẩu</label>
+                                            <label asp-for="Input.Password">Password</label>
                                             <input asp-for="Input.Password" type="password" class="form-control" />
                                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                                         </div>
@@ -69,7 +69,7 @@
                                         
 
                                         <div class="form-group">
-                                            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                                            <button type="submit" class="btn btn-primary">Login</button>
                                         </div>
 
 
