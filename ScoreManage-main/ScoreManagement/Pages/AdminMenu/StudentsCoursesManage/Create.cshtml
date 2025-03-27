@@ -17,7 +17,11 @@
             <!-- Chọn Sinh Viên -->
             <div class="form-group">
                 <label for="StudentCodeDropdown" class="control-label">Student Code</label>
-                <select class="form-control" id="StudentCodeDropdown" asp-items="ViewBag.StudentId"></select>
+                <select class="form-control" id="StudentCodeDropdown" asp-items="ViewBag.StudentId">
+                    <option value="0">-- Select student --</option>
+                </select>
+                <span asp-validation-for="StudentsCourse.StudentId" class="text-danger"></span>
+
             </div>
 
             <!-- Trường ẩn để giữ StudentId -->
@@ -31,13 +35,21 @@
             <!-- Chọn Môn Học -->
             <div class="form-group">
                 <label asp-for="StudentsCourse.CourseId" class="control-label"></label>
-                <select asp-for="StudentsCourse.CourseId" class="form-control" asp-items="ViewBag.CourseId" id="CourseIdDropdown"></select>
+                <select asp-for="StudentsCourse.CourseId" class="form-control" asp-items="ViewBag.CourseId" id="CourseIdDropdown">
+                    <option value="0">-- Select course --</option>
+                </select>
+                <span asp-validation-for="StudentsCourse.CourseId" class="text-danger"></span>
+
             </div>
 
             <!-- Chọn Lớp (ban đầu bị vô hiệu hóa) -->
             <div class="form-group">
                 <label asp-for="StudentsCourse.ClassId" class="control-label"></label>
-                <select asp-for="StudentsCourse.ClassId" class="form-control" id="ClassIdDropdown" disabled></select>
+                <select asp-for="StudentsCourse.ClassId" class="form-control" id="ClassIdDropdown" disabled>
+                    <option  value="0">-- Select class --</option>
+                </select>
+                <span asp-validation-for="StudentsCourse.ClassId" class="text-danger"></span>
+
             </div>
 
             <!-- Chọn Semester (ban đầu bị vô hiệu hóa) -->
@@ -94,7 +106,7 @@
                 fetch(`/AdminMenu/StudentsCoursesManage/Create?handler=GetClassesByCourse&courseId=${courseId}`)
                     .then(response => response.json())
                     .then(data => {
-                        classDropdown.innerHTML = ""; // Xóa danh sách cũ
+                        classDropdown.innerHTML = '<option value="0">-- Select class --</option>';
                         classDropdown.disabled = false; // Mở khóa dropdown lớp
 
                         data.forEach(classItem => {
