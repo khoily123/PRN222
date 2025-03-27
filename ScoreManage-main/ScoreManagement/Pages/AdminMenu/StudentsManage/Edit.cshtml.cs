@@ -59,6 +59,12 @@ namespace ScoreManagement.Pages.StudentsManage
                 await PopulateSelectListsAsync(); // Tái lập danh sách chọn khi có lỗi
                 return Page();
             }
+            // Kiểm tra nếu StudentCode vượt quá 10 ký tự
+            if (Student.StudentCode.Length > 10)
+            {
+                ModelState.AddModelError("Student.StudentCode", "Mã sinh viên không được vượt quá 10 ký tự.");
+                return Page();
+            }
 
             // Kiểm tra nếu StudentCode đã tồn tại với một Student khác
             var duplicateStudentCode = await _context.Students

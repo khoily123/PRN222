@@ -67,6 +67,12 @@ namespace ScoreManagement.Pages.StudentsManage
             {
                 return Page();
             }
+            // Kiểm tra nếu StudentCode vượt quá 10 ký tự
+            if (Student.StudentCode.Length > 10)
+            {
+                ModelState.AddModelError("Student.StudentCode", "Mã sinh viên không được vượt quá 10 ký tự.");
+                return Page();
+            }
 
             // Kiểm tra nếu StudentCode hoặc FullName đã tồn tại
             var existingStudent = await _context.Students
