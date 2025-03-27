@@ -25,10 +25,10 @@
             @Model.Lecturer.Dob?.ToString("dd/MM/yyyy")
         </dd>
         <dt class="col-sm-2">
-            Giới tính
+            Gender
         </dt>
         <dd class="col-sm-10">
-            @(Model.Lecturer.Gender == true ? "Nam" : Model.Lecturer.Gender == false ? "Nữ" : "Không xác định")
+            @(Model.Lecturer.Gender == true ? "Male" : Model.Lecturer.Gender == false ? "Female" : "None")
         </dd>
         <dt class="col-sm-2">
             Address

@@ -29,7 +29,7 @@
                     <!-- Gọi Topbar từ Partial View -->
                     @await Html.PartialAsync("_Topbar")
 
-                    <h2 class="text-center my-4">Điểm của Sinh Viên - @Model.StudentName</h2>
+                    <h2 class="text-center my-4">Student Score - @Model.StudentName</h2>
 
                     @if (TempData["SuccessMessage"] != null)
                     {
@@ -48,12 +48,12 @@
                     @if (Model.StudentGrade != null)
                     {
                         <form method="post" class="bg-light p-4 rounded shadow" style="width: 100%;">
-                            <h4 class="mb-3">Cập Nhật Điểm</h4>
+                            <h4 class="mb-3">Update Score</h4>
                             <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Loại Điểm</th>
-                                        <th>Điểm</th>
+                                        <th>Score Type</th>
+                                        <th>Score</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,22 +114,22 @@
                                 </tbody>
                             </table>
                             <div class="form-group">
-                                <button type="submit" asp-page-handler="Update" class="btn btn-success">Cập Nhật</button>
-                                <button type="submit" asp-page-handler="Delete" class="btn btn-danger">Xóa</button>
+                                <button type="submit" asp-page-handler="Update" class="btn btn-success">Update</button>
+                                <button type="submit" asp-page-handler="Delete" class="btn btn-danger">Delete</button>
                             </div>
                         </form>
                     }
                     else
                     {
                         <div class="alert alert-warning" role="alert">
-                            Không có điểm cho sinh viên này.
-                            <a href="@Url.Page("/LectureMenu/CreateGrade", new { StudentId = Model.StudentId, CourseId = Model.CourseId })" class="btn btn-primary ml-3">Tạo điểm</a>
+                            No score for this student.
+                            <a href="@Url.Page("/LectureMenu/CreateGrade", new { StudentId = Model.StudentId, CourseId = Model.CourseId })" class="btn btn-primary ml-3">Create score</a>
                         </div>
                     }
 
                     <!-- Back Button -->
                     <div class="form-group mt-4">
-                        <a href="@Url.Page("/LectureMenu/LecturerDashboard", new { CourseId = Model.CourseId })" class="btn btn-secondary">Quay lại</a>
+                        <a href="@Url.Page("/LectureMenu/LecturerDashboard", new { CourseId = Model.CourseId })" class="btn btn-secondary">Back</a>
                     </div>
 
                 </div>

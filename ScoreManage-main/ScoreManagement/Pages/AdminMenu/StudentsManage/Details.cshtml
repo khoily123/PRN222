@@ -31,10 +31,10 @@
             @Model.Student.Dob?.ToString("dd/MM/yyyy")
         </dd>
         <dt class="col-sm-2">
-            Giới tính
+            Gender
         </dt>
         <dd class="col-sm-10">
-            @(Model.Student.Gender == true ? "Nam" : Model.Student.Gender == false ? "Nữ" : "Không xác định")
+            @(Model.Student.Gender == true ? "Male" : Model.Student.Gender == false ? "Female" : "None")
         </dd>
 
         <dt class="col-sm-2">
