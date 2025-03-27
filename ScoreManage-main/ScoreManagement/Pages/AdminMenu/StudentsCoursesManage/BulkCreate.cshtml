@@ -113,6 +113,25 @@
                             semesterDropdown.disabled = false;
                         })
                         .catch(error => console.error('Error fetching semester:', error));
+
+                                // 🔹 Lấy danh sách Course của lớp
+        fetch(`/AdminMenu/StudentsCoursesManage/BulkCreate?handler=GetCoursesByClass&classId=${selectedClassId}`)
+            .then(response => response.json())
+            .then(data => {
+                const courseDropdown = document.getElementById("CourseCodeDropdown");
+                courseDropdown.innerHTML = '<option value="">-- Select a course --</option>';
+
+                data.forEach(course => {
+                    let option = document.createElement("option");
+                    option.value = course.courseId;
+                    option.text = course.courseName;
+                    courseDropdown.appendChild(option);
+                });
+
+                courseDropdown.disabled = false;
+            })
+            .catch(error => console.error('Error fetching courses:', error));
+
                 } else {
                     // Reset nếu không chọn lớp
                     document.getElementById("studentsTableBody").innerHTML = "";
