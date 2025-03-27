@@ -59,7 +59,7 @@
         </div>
     }
 
-    <form method="post">
+    <form method="post" onsubmit="return confirm('Are you sure you want to delete this Lecture?');">
         <input type="hidden" asp-for="Lecturer.LecturerId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index">Back to List</a>

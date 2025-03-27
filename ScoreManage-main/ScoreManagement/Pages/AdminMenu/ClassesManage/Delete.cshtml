@@ -34,7 +34,7 @@
         </div>
     }
     
-    <form method="post">
+    <form method="post" onsubmit="return confirm('Are you sure you want to delete this Class?');">
         <input type="hidden" asp-for="Class.ClassId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index">Back to List</a>

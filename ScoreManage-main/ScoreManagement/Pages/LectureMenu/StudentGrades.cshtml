@@ -47,7 +47,7 @@
 
                     @if (Model.StudentGrade != null)
                     {
-                        <form method="post" class="bg-light p-4 rounded shadow" style="width: 100%;">
+                        <form method="post" class="bg-light p-4 rounded shadow" style="width: 100%;" onsubmit="return confirm('Are you sure?');">
                             <h4 class="mb-3">Update Score</h4>
                             <table class="table table-bordered">
                                 <thead class="thead-light">
