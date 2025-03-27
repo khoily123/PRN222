@@ -21,7 +21,7 @@ connection.on("ReceiveAccount", function () {
 });
 connection.on("ReceiveClassCourse", function () {
 
-    location.href = "/AdminMenu/ClassCourseManage";
+    location.href = "/AdminMenu/ClassCoursesManage";
 });
 connection.on("ReceiveClass", function () {
 
