@@ -43,14 +43,54 @@ namespace ScoreManagement.Pages.AdminMenu.StudentsCoursesManage
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.StudentsCourses == null || StudentsCourse == null)
+            ViewData["ClassId"] = new SelectList(_context.Classes, "ClassId", "ClassId");
+            ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "CourseName");
+            ViewData["LecturerId"] = new SelectList(_context.Lecturers, "LecturerId", "LecturerName");
+            ViewData["SemesterId"] = new SelectList(_context.Semesters, "SemesterId", "SemesterCode");
+            ViewData["StudentId"] = new SelectList(_context.Students, "StudentId", "StudentCode");
+            if (StudentsCourse.StudentId == 0)
             {
-                return Page();
+                ModelState.AddModelError("StudentsCourse.StudentId", "Please select a student.");
             }
 
+            if (StudentsCourse.CourseId == 0)
+            {
+                ModelState.AddModelError("StudentsCourse.CourseId", "Please select a course.");
+            }
+
+            if (StudentsCourse.ClassId == 0)
+            {
+                ModelState.AddModelError("StudentsCourse.ClassId", "Please select a class.");
+
+            }
+
+            if (StudentsCourse.SemesterId == 0)
+            {
+                ModelState.AddModelError("StudentsCourse.SemesterId", "Please select a semester.");
+
+            }
+
+            if (StudentsCourse.LecturerId == 0)
+            {
+                ModelState.AddModelError("StudentsCourse.LecturerId", "Please select a lecturer.");
+
+            }
+            var isExist = await _context.StudentsCourses.AnyAsync(sc =>
+        sc.StudentId == StudentsCourse.StudentId &&
+        sc.CourseId == StudentsCourse.CourseId &&
+        sc.ClassId == StudentsCourse.ClassId);
+
+            if (isExist)
+                ModelState.AddModelError("", "This student is already registered for this course in the selected class.");
+
+            if (!ModelState.IsValid)
+                return Page();
+
+            // Thêm dữ liệu mới
             _context.StudentsCourses.Add(StudentsCourse);
             await _context.SaveChangesAsync();
             await _signalRServices.Clients.All.SendAsync("ReceiveStudentCourse");
+
             return RedirectToPage("./Index");
         }
         public async Task<JsonResult> OnGetStudentInfo(int studentId)
