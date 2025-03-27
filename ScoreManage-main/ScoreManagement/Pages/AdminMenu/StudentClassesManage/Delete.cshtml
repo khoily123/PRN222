@@ -27,7 +27,7 @@
         </dd>
     </dl>
     
-    <form method="post">
+    <form method="post" onsubmit="return confirm('Are you sure you want to delete this StudentClasses?');">
         <input type="hidden" asp-for="StudentClass.StudentClassId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index">Back to List</a>
