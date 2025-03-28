@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using ScoreManagement.Hubs;
 using ScoreManagement.Models;
 
@@ -41,7 +42,13 @@ namespace ScoreManagement.Pages.AdminMenu.CoursesManage
             {
                 return Page();
             }
-
+            // Kiểm tra xem CourseCode đã tồn tại hay chưa
+            bool courseExists = await _context.Courses.AnyAsync(c => c.CourseCode == Course.CourseCode);
+            if (courseExists)
+            {
+                ModelState.AddModelError("Course.CourseCode", "This course code already exists.");
+                return Page();
+            }
             _context.Courses.Add(Course);
             await _context.SaveChangesAsync();
             await _signalRServices.Clients.All.SendAsync("ReceiveCourse");
